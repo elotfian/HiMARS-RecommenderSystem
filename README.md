@@ -18,15 +18,15 @@ Standard approaches collapse this conflict into a single weighted objective. Thi
 
 For a target user *u* and a recommendation list *R* of size *s*, HiMARS simultaneously maximizes:
 
-**Accuracy** — average cosine similarity between recommended items and items the user has rated:
+**Accuracy** — sum of cosine similarities between each recommended item and each item rated by the user, normalized by |R|:
 
 $$f_1(R) = \frac{\sum_{i \in R,\, j \in P_u} S(i, j)}{|R|}$$
 
-**Diversity** — average pairwise dissimilarity within the recommended list:
+**Diversity** — mean pairwise dissimilarity among items in the recommended list:
 
 $$f_2(R) = \frac{\sum_{i \in R} \sum_{j \in R,\, i \neq j} (1 - S(i,j))}{|R| \cdot (|R|-1)}$$
 
-where $S(i, j)$ is the cosine similarity between the rating vectors of items $i$ and $j$, and $P_u$ is the set of items rated by user $u$ in training. High accuracy requires similar items; high diversity requires dissimilar ones — the objectives are structurally in conflict.
+where $S(i, j)$ is the cosine similarity between the rating vectors of items $i$ and $j$, and $P_u$ is the set of items rated by user $u$ in training. Note: f₂ is the *optimization objective* (higher = more diverse); D(R) in Section 4.1 is the corresponding *evaluation metric* defined as mean pairwise similarity (lower = more diverse). High accuracy requires similar items; high diversity requires dissimilar ones — the objectives are structurally in conflict.
 
 ---
 
@@ -68,7 +68,7 @@ The core insight: NSGA-II generates a broad Pareto frontier but AMOSA can partia
 | Metric | Formula | Direction |
 |--------|---------|-----------|
 | **Accuracy** `P(R)` | `\|R ∩ T\| / \|R\|`, where T = test items with rating ≥ 3 | higher is better |
-| **Diversity** `D(R)` | mean pairwise item similarity within R | lower is better |
+| **Diversity** `D(R)` | mean pairwise item similarity within R: (1/|R|(|R|−1)) Σᵢ≠ⱼ S(i,j) | lower is better |
 | **Novelty** `N(R)` | mean number of users who have rated each item | lower is better |
 
 ### Pareto frontier quality metrics (on the full Pareto set)
@@ -78,7 +78,7 @@ The core insight: NSGA-II generates a broad Pareto frontier but AMOSA can partia
 | **SM** (Spacing Metric) | Uniformity of solution distribution along the frontier — mean consecutive distance after sorting by f₁ | lower is better |
 | **MID** (Mean Ideal Distance) | Average distance from each normalized Pareto solution to the ideal point (1,1) | lower is better |
 | **DM** (Diversification Metric) | Extent of the frontier — Euclidean distance between extreme objective values | higher is better |
-| **SNS** (Spread of Non-Dominated Solutions) | Variance of solution spread on the normalized frontier | higher is better |
+| **SNS** (Spread of Non-Dominated Solutions) | Standard deviation of Cᵢ = √(f₁ᵢ² + f₂ᵢ²) across all Pareto solutions (normalized) | higher is better |
 
 ### Algorithm ranking — TOPSIS with AHP weights
 
@@ -142,8 +142,8 @@ HiMARS/
 Requires Python ≥ 3.10.
 
 ```bash
-git clone https://github.com/elotfian/HiMARS.git
-cd HiMARS
+git clone https://github.com/elotfian/HiMARS-RecommenderSystem.git
+cd HiMARS-RecommenderSystem
 python -m venv .venv
 source .venv/bin/activate        # macOS / Linux
 # .venv\Scripts\activate         # Windows
@@ -206,22 +206,6 @@ python experiments/aggregate_results.py --results-dir results/movielens
 | `pareto_metrics.csv` | SM, MID, DM, SNS, CLO, TOPSIS rank per algorithm and user |
 | `selected_summary.csv` | Mean ± std of accuracy, diversity, novelty across simulations |
 | `pareto_metric_summary.csv` | Mean ± std of Pareto quality metrics across simulations |
-
----
-
-## Implementation notes and corrections
-
-This package is a clean, installable rebuild of the original notebook code. The following corrections were made relative to the submitted notebooks:
-
-| Issue | Fix |
-|-------|-----|
-| Notebook used global variables throughout | Replaced with explicit `RecommendationProblem`, `HiMARSConfig`, and `ObjectiveEvaluator` classes |
-| ICF used plain cosine on zero-filled ratings | Implemented **adjusted cosine similarity** as specified in the manuscript (user-mean-centered before cosine) |
-| Weighted-sum prediction denominator used `sum(similarity)` | Fixed to `sum(\|similarity\|)` as in the paper's Equation (3) |
-| `HANv3`/`HANv4` naming in notebooks | Renamed to `HANIv1`/`HANIv2` to match paper notation |
-| `HANIv2` built crossover offspring `CT` but updated population using `Ct` without first assigning `Ct = Mutate(CT)` | Mutation step added explicitly, matching Algorithm 6 line 9 |
-| No random seeds | Deterministic seeds via `numpy.random.Generator` for full reproducibility |
-| Division by zero in metrics for one-point Pareto fronts | Guards added throughout `metrics.py` and `pareto.py` |
 
 ---
 
