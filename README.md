@@ -76,7 +76,7 @@ The core insight: NSGA-II generates a broad Pareto frontier but AMOSA can partia
 | Metric | Measures | Direction |
 |--------|---------|-----------|
 | **SM** (Spacing Metric) | Uniformity of solution distribution along the frontier — mean consecutive distance after sorting by f₁ | lower is better |
-| **MID** (Mean Ideal Distance) | Average distance from each normalized Pareto solution to the ideal point (1,1) | lower is better |
+| **MID** (Mean Ideal Distance) | After normalizing objective values to [0,1], average Euclidean distance from each Pareto solution to the ideal point (1,1) | lower is better |
 | **DM** (Diversification Metric) | Extent of the frontier — Euclidean distance between extreme objective values | higher is better |
 | **SNS** (Spread of Non-Dominated Solutions) | Standard deviation of Cᵢ = √(f₁ᵢ² + f₂ᵢ²) across all Pareto solutions (normalized) | higher is better |
 
@@ -104,7 +104,7 @@ Experiments on **MovieLens-1M** (6,040 users, 3,706 movies, sparsity 82.1%) and 
 ## Repository structure
 
 ```
-HiMARS/
+HiMARS-RecommenderSystem/
 ├── src/himars/
 │   ├── algorithms/
 │   │   ├── amosa.py        # AMOSA + Nlists neighborhood search (Algorithms 3–4)
