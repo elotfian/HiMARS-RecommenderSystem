@@ -1,0 +1,12 @@
+dataset: movielens
+ratings_path: data/raw/movielens/ratings.dat
+users: [3411, 3412, 3413, 3414, 3415, 3416, 3417, 3418, 3419, 3420]
+test_size: 0.20
+random_state: 42
+n_simulations: 20
+max_iter: 200
+top_k: 100
+top_s: 10
+n_neighbors: 20
+rating_threshold: 3
+similarity: adjusted_cosine

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "himars"
+version = "0.1.0"
+description = "Clean Python package for HiMARS hybrid multi-objective recommender-system algorithms."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  {name = "Elaheh Lotfian"},
+  {name = "Alireza Kabgani"}
+]
+dependencies = [
+  "numpy>=1.23",
+  "pandas>=1.5",
+  "scikit-learn>=1.2",
+  "scipy>=1.9",
+  "tqdm>=4.64",
+  "PyYAML>=6.0",
+  "matplotlib>=3.6"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

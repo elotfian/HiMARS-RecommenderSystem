@@ -1,0 +1,12 @@
+dataset: modcloth
+ratings_path: data/raw/modcloth/df_modcloth.csv
+users: [620, 621, 622, 623, 624, 625, 626, 627, 628, 629]
+test_size: 0.20
+random_state: 42
+n_simulations: 20
+max_iter: 200
+top_k: 100
+top_s: 10
+n_neighbors: 20
+rating_threshold: 3
+similarity: adjusted_cosine
